@@ -1,14 +1,14 @@
 ### Hi there 👋, I'm Khadimul Islam
-I am Khadimul. If you're looking for a designer to create your unique, stunning, professional,  Flutter Mobile Application Developer from Bangladesh. I am an experienced UI/UX Designer with 1 years of experience. I am a Mobile App developer, Proficient in Dart & Flutter in crafting user-friendly and innovative mobile applications. Committed to delivering high-quality, efficient, and scalable solutions to enhance user experiences. Seeking opportunities to collaborate on exciting projects and further expand my skills in the dynamic world of mobile app development.
+I'm Khadimul. If you're looking for a designer to create your unique, stunning, professional,  Flutter Mobile Application Developer from Bangladesh. I am an experienced UI/UX Designer with 1 years of experience. I am a Mobile App developer, Proficient in Dart & Flutter in crafting user-friendly and innovative mobile applications. Committed to delivering high-quality, efficient, and scalable solutions to enhance user experiences. Seeking opportunities to collaborate on exciting projects and further expand my skills in the dynamic world of mobile app development.
 
-Skills: Figma / Dart/ Java/ Data Structure Algorithm/ Flutter
+Skills: Figma / Dart/ Java/ Data Structure Algorithm/ OOP/ Flutter
 
-- 🔭 I’m currently working on E-Commerch App 
+- 🔭 I’m currently working on BdCalling It Ltd
 - 🌱 I’m currently learning Dart & Flutter 
-- 👯 I’m looking to collaborate on Github 
+- 👯 I’m looking to collaborate on GitHub 
 - 💬 Ask me about Dart & Flutter 
 - 📫 How to reach me: khadimulislam.dev@gmail.com 
-- ⚡ Fun fact: love to write code 
+- ⚡ Fun fact: I love to write code 
 
 
 [<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/github.svg' alt='github' height='40'>](https://github.com/md-khadimul-islam)  [<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/linkedin.svg' alt='linkedin' height='40'>](https://www.linkedin.com/in/md-khadimul-islam/)  [<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/facebook.svg' alt='facebook' height='40'>](https://www.facebook.com/khadimul723)  [<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/instagram.svg' alt='instagram' height='40'>](https://www.instagram.com/khadimul.legend/)  
