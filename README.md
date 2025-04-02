@@ -3,7 +3,7 @@ I'm Khadimul. If you're looking for a designer to create your unique, stunning, 
 
 Skills: Figma / Dart/ Java/ Data Structure Algorithm/ OOP/ Flutter
 
-- 🔭 I’m currently working on BdCalling It Ltd
+- 🔭 I’m currently working on TexBazar Ltd
 - 🌱 I’m currently learning Dart & Flutter 
 - 👯 I’m looking to collaborate on GitHub 
 - 💬 Ask me about Dart & Flutter 
