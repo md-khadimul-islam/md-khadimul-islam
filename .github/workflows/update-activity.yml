@@ -1,0 +1,44 @@
+
+name: Update GitHub Activity
+
+on:
+  schedule:
+    - cron: "10 0 * * *"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-activity:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Generate activity SVG
+        run: python scripts/generate_activity.py
+        env:
+          GH_USER: md-khadimul-islam
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit updated activity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add assets/activity.svg assets/activity-light.svg
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update GitHub activity"
+            git push
+          else
+            echo "No activity changes."
+          fi
