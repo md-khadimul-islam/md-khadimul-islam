@@ -1,60 +1,60 @@
 
 import json
 import os
+import sys
 import urllib.request
 import urllib.error
 
 from datetime import date, datetime, timedelta, timezone
 from html import escape
 
-
-# ==========================================
+# =====================================
 # CONFIGURATION
-# ==========================================
+# =====================================
 
-USERNAME = "md-khadimul-islam"
-TOKEN = os.environ["GITHUB_TOKEN"]
+USER = os.environ.get("GH_USER", "md-khadimul-islam")
+TOKEN = os.environ["GH_TOKEN"]
 
-OUTPUT = "assets/activity.svg"
+OUTPUT_DIR = sys.argv[1] if len(sys.argv) > 1 else "assets"
+
 API_URL = "https://api.github.com/graphql"
 
 
-# ==========================================
-# GITHUB GRAPHQL QUERIES
-# ==========================================
+# =====================================
+# FETCH GITHUB CONTRIBUTIONS
+# =====================================
 
-USER_QUERY = """
-query($login: String!) {
-  user(login: $login) {
-    createdAt
-  }
-}
-"""
+def fetch_contributions():
 
-CONTRIBUTION_QUERY = """
-query($login: String!, $from: DateTime!, $to: DateTime!) {
-  user(login: $login) {
-    contributionsCollection(from: $from, to: $to) {
-      totalContributions
-      contributionCalendar {
-        weeks {
-          contributionDays {
-            date
-            contributionCount
-          }
+    today = datetime.now(timezone.utc).date()
+    start_date = today - timedelta(days=29)
+
+    query = """
+    query(
+        $login: String!,
+        $from: DateTime!,
+        $to: DateTime!
+    ) {
+        user(login: $login) {
+            contributionsCollection(from: $from, to: $to) {
+                contributionCalendar {
+                    weeks {
+                        contributionDays {
+                            date
+                            contributionCount
+                        }
+                    }
+                }
+            }
         }
-      }
     }
-  }
-}
-"""
+    """
 
-
-# ==========================================
-# GITHUB API REQUEST
-# ==========================================
-
-def github_graphql(query, variables):
+    variables = {
+        "login": USER,
+        "from": f"{start_date}T00:00:00Z",
+        "to": f"{today}T23:59:59Z"
+    }
 
     payload = json.dumps({
         "query": query,
@@ -76,460 +76,229 @@ def github_graphql(query, variables):
             result = json.loads(response.read())
 
     except urllib.error.HTTPError as error:
-        details = error.read().decode("utf-8", errors="replace")
         raise RuntimeError(
-            f"GitHub API HTTP {error.code}: {details}"
+            f"GitHub API error {error.code}: "
+            f"{error.read().decode('utf-8', errors='replace')}"
         ) from error
 
-    except urllib.error.URLError as error:
-        raise RuntimeError(
-            f"Could not connect to GitHub API: {error}"
-        ) from error
+    if result.get("errors"):
+        raise RuntimeError(result["errors"])
 
-    if "errors" in result:
-        raise RuntimeError(
-            f"GitHub GraphQL error: {result['errors']}"
-        )
-
-    return result["data"]
-
-
-# ==========================================
-# FETCH CONTRIBUTION HISTORY
-# ==========================================
-
-def fetch_contributions():
-
-    print("Fetching GitHub profile...")
-
-    user = github_graphql(
-        USER_QUERY,
-        {"login": USERNAME}
-    )["user"]
+    user = result["data"]["user"]
 
     if user is None:
-        raise RuntimeError(
-            f"GitHub user not found: {USERNAME}"
-        )
+        raise RuntimeError(f"GitHub user not found: {USER}")
 
-    created_at = datetime.fromisoformat(
-        user["createdAt"].replace("Z", "+00:00")
-    )
+    contribution_days = {}
 
-    created_date = created_at.date()
-    today = datetime.now(timezone.utc).date()
+    for week in user["contributionsCollection"]["contributionCalendar"]["weeks"]:
+        for day in week["contributionDays"]:
+            contribution_days[day["date"]] = day["contributionCount"]
 
-    all_days = {}
-    lifetime_total = 0
+    # Always generate exactly 30 calendar days.
+    days = []
 
-    print("Fetching contribution history...")
+    for index in range(30):
+        current = start_date + timedelta(days=index)
 
-    for year in range(created_date.year, today.year + 1):
-
-        start = datetime(
-            year, 1, 1,
-            tzinfo=timezone.utc
-        )
-
-        end = datetime(
-            year, 12, 31, 23, 59, 59,
-            tzinfo=timezone.utc
-        )
-
-        if year == today.year:
-            end = datetime.now(timezone.utc)
-
-        result = github_graphql(
-            CONTRIBUTION_QUERY,
-            {
-                "login": USERNAME,
-                "from": start.isoformat(),
-                "to": end.isoformat()
-            }
-        )["user"]["contributionsCollection"]
-
-        lifetime_total += result["totalContributions"]
-
-        for week in result["contributionCalendar"]["weeks"]:
-
-            for item in week["contributionDays"]:
-
-                day = date.fromisoformat(item["date"])
-
-                all_days[day] = item["contributionCount"]
-
-        print(f"Fetched contributions for {year}")
-
-    return all_days, lifetime_total, today, created_date
-
-
-# ==========================================
-# CALCULATE STREAKS
-# ==========================================
-
-def calculate_streaks(all_days, today, created_date):
-
-    longest_streak = 0
-    running_streak = 0
-
-    # Calculate longest streak
-    current_date = created_date
-
-    while current_date <= today:
-
-        contributions = all_days.get(current_date, 0)
-
-        if contributions > 0:
-
-            running_streak += 1
-
-            longest_streak = max(
-                longest_streak,
-                running_streak
+        days.append({
+            "date": current.isoformat(),
+            "contributionCount": contribution_days.get(
+                current.isoformat(), 0
             )
+        })
 
-        else:
-
-            running_streak = 0
-
-        current_date += timedelta(days=1)
-
-    # Calculate current streak
-    current_streak = 0
-
-    anchor = today
-
-    # If no contributions today, check yesterday
-    if all_days.get(today, 0) == 0:
-        anchor = today - timedelta(days=1)
-
-    current_date = anchor
-
-    while current_date >= created_date:
-
-        if all_days.get(current_date, 0) > 0:
-
-            current_streak += 1
-
-        else:
-
-            break
-
-        current_date -= timedelta(days=1)
-
-    return current_streak, longest_streak
+    return days
 
 
-# ==========================================
-# GENERATE ACTIVITY SVG
-# ==========================================
+# =====================================
+# GENERATE SVG
+# =====================================
 
-def generate_svg(
-    all_days,
-    lifetime_total,
-    today,
-    created_date
-):
+def generate_svg(days, bg, fg, sub, empty, fill, accent):
 
-    start_date = today - timedelta(days=29)
+    WIDTH = 495
+    HEIGHT = 170
 
-    last_30_days = [
-        start_date + timedelta(days=index)
-        for index in range(30)
-    ]
+    CELL = 11
+    GAP = 3
 
-    # Days with contributions
-    active_days = sum(
-        1
-        for day in last_30_days
-        if all_days.get(day, 0) > 0
+    x0 = (WIDTH - (30 * (CELL + GAP) - GAP)) / 2
+
+    maximum = max(
+        [day["contributionCount"] for day in days] + [1]
     )
 
-    # Calculate streaks
-    current_streak, longest_streak = calculate_streaks(
-        all_days,
-        today,
-        created_date
+    active = sum(
+        1 for day in days
+        if day["contributionCount"] > 0
     )
 
-    max_contributions = max(
-        [
-            all_days.get(day, 0)
-            for day in last_30_days
-        ] + [1]
+    total = sum(
+        day["contributionCount"] for day in days
     )
 
-    # Generate contribution squares
-    squares = []
+    rects = []
 
-    for index, day in enumerate(last_30_days):
+    for index, day in enumerate(days):
 
-        count = all_days.get(day, 0)
+        count = day["contributionCount"]
 
-        if count == 0:
-            color = "#21262d"
+        opacity = (
+            0 if count == 0
+            else 0.35 + 0.65 * (count / maximum)
+        )
 
-        elif count <= max_contributions * 0.25:
-            color = "#0e4429"
+        color = empty if count == 0 else fill
 
-        elif count <= max_contributions * 0.50:
-            color = "#006d32"
+        x = x0 + index * (CELL + GAP)
 
-        elif count <= max_contributions * 0.75:
-            color = "#26a641"
-
-        else:
-            color = "#39d353"
-
-        x = 240 + (index * 14)
-
-        squares.append(
+        rects.append(
             f"""
             <rect
-                x="{x}"
-                y="116"
-                width="11"
-                height="11"
+                x="{x:.1f}"
+                y="118"
+                width="{CELL}"
+                height="{CELL}"
                 rx="2"
                 fill="{color}"
+                fill-opacity="{opacity:.2f}"
             >
                 <title>
-                    {escape(str(day))}: {count} contributions
+                    {escape(day["date"])}: {count} contributions
                 </title>
             </rect>
             """
         )
 
-    squares_svg = "\n".join(squares)
+    start_date = days[0]["date"]
+    end_date = days[-1]["date"]
 
-    # Date range
-    date_range = (
-        f"{start_date.isoformat()} to {today.isoformat()}"
-    )
-
-    # ======================================
-    # SVG TEMPLATE
-    # ======================================
-
-    svg = f"""
+    return f"""
     <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="900"
-        height="300"
-        viewBox="0 0 900 300"
+        width="{WIDTH}"
+        height="{HEIGHT}"
+        viewBox="0 0 {WIDTH} {HEIGHT}"
     >
 
         <rect
-            width="900"
-            height="300"
-            rx="8"
-            fill="#0d1117"
+            width="{WIDTH}"
+            height="{HEIGHT}"
+            rx="6"
+            fill="{bg}"
         />
 
-        <!-- Header -->
-
-        <text
-            x="28"
-            y="35"
-            fill="#f0f6fc"
-            font-size="15"
-            font-weight="bold"
-        >
-            My GitHub Activity
-        </text>
-
-        <!-- Active days -->
-
-        <text
-            x="450"
-            y="76"
+        <g
+            font-family="Segoe UI, Ubuntu, Helvetica, Arial, sans-serif"
             text-anchor="middle"
-            fill="#58a6ff"
-            font-size="34"
-            font-weight="bold"
         >
-            {active_days}
-        </text>
 
-        <text
-            x="480"
-            y="76"
-            fill="#8b949e"
-            font-size="17"
-        >
-            / 30 days
-        </text>
+            <text
+                x="{WIDTH / 2}"
+                y="58"
+                font-size="34"
+                font-weight="700"
+                fill="{accent}"
+            >
+                {active}
+                <tspan
+                    font-size="18"
+                    fill="{sub}"
+                    font-weight="400"
+                >
+                    / 30 days
+                </tspan>
+            </text>
 
-        <text
-            x="450"
-            y="99"
-            text-anchor="middle"
-            fill="#f0f6fc"
-            font-size="13"
-        >
-            Days with GitHub contributions in the last 30 days
-        </text>
+            <text
+                x="{WIDTH / 2}"
+                y="86"
+                font-size="14"
+                fill="{fg}"
+            >
+                Days I coded in the last 30 days
+            </text>
 
-        <text
-            x="450"
-            y="110"
-            text-anchor="middle"
-            fill="#8b949e"
-            font-size="9"
-        >
-            {date_range}
-        </text>
+            <text
+                x="{WIDTH / 2}"
+                y="106"
+                font-size="11"
+                fill="{sub}"
+            >
+                {total} contributions · {start_date} to {end_date}
+            </text>
 
-        <!-- Contribution calendar -->
+        </g>
 
-        {squares_svg}
-
-        <!-- Divider -->
-
-        <line
-            x1="28"
-            y1="158"
-            x2="872"
-            y2="158"
-            stroke="#30363d"
-        />
-
-        <!-- Statistics dividers -->
-
-        <line
-            x1="300"
-            y1="180"
-            x2="300"
-            y2="260"
-            stroke="#484f58"
-        />
-
-        <line
-            x1="600"
-            y1="180"
-            x2="600"
-            y2="260"
-            stroke="#484f58"
-        />
-
-        <!-- Total contributions -->
-
-        <text
-            x="165"
-            y="215"
-            text-anchor="middle"
-            fill="#58a6ff"
-            font-size="29"
-            font-weight="bold"
-        >
-            {lifetime_total:,}
-        </text>
-
-        <text
-            x="165"
-            y="240"
-            text-anchor="middle"
-            fill="#f0f6fc"
-            font-size="13"
-        >
-            Total Contributions
-        </text>
-
-        <!-- Current streak -->
-
-        <text
-            x="450"
-            y="215"
-            text-anchor="middle"
-            fill="#58a6ff"
-            font-size="29"
-            font-weight="bold"
-        >
-            {current_streak}
-        </text>
-
-        <text
-            x="450"
-            y="240"
-            text-anchor="middle"
-            fill="#f0f6fc"
-            font-size="13"
-        >
-            Current Streak
-        </text>
-
-        <!-- Longest streak -->
-
-        <text
-            x="735"
-            y="215"
-            text-anchor="middle"
-            fill="#58a6ff"
-            font-size="29"
-            font-weight="bold"
-        >
-            {longest_streak}
-        </text>
-
-        <text
-            x="735"
-            y="240"
-            text-anchor="middle"
-            fill="#f0f6fc"
-            font-size="13"
-        >
-            Longest Streak
-        </text>
-
-        <!-- Footer -->
-
-        <text
-            x="450"
-            y="285"
-            text-anchor="middle"
-            fill="#8b949e"
-            font-size="10"
-        >
-            Updated automatically using GitHub contribution data
-        </text>
+        {''.join(rects)}
 
     </svg>
     """
 
-    # Save SVG
-    os.makedirs("assets", exist_ok=True)
+
+# =====================================
+# SAVE SVG FILES
+# =====================================
+
+def main():
+
+    print(f"Fetching GitHub activity for {USER}...")
+
+    days = fetch_contributions()
+
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    dark_svg = generate_svg(
+        days,
+        "#0D1117",
+        "#e6edf3",
+        "#7d8590",
+        "#21262d",
+        "#39d353",
+        "#58a6ff"
+    )
+
+    light_svg = generate_svg(
+        days,
+        "#ffffff",
+        "#1f2328",
+        "#59636e",
+        "#ebedf0",
+        "#2da44e",
+        "#0969da"
+    )
 
     with open(
-        OUTPUT,
+        f"{OUTPUT_DIR}/activity.svg",
         "w",
         encoding="utf-8"
     ) as file:
+        file.write(dark_svg)
 
-        file.write(svg.strip())
+    with open(
+        f"{OUTPUT_DIR}/activity-light.svg",
+        "w",
+        encoding="utf-8"
+    ) as file:
+        file.write(light_svg)
 
-    print(f"SVG generated successfully: {OUTPUT}")
-
-    print(f"Active days: {active_days}/30")
-    print(f"Total contributions: {lifetime_total}")
-    print(f"Current streak: {current_streak}")
-    print(f"Longest streak: {longest_streak}")
-
-
-# ==========================================
-# MAIN
-# ==========================================
-
-if __name__ == "__main__":
-
-    print("Starting GitHub activity generator...")
-
-    all_days, total, today, created = fetch_contributions()
-
-    generate_svg(
-        all_days,
-        total,
-        today,
-        created
+    active = sum(
+        1 for day in days
+        if day["contributionCount"] > 0
     )
 
-    print("GitHub activity update completed!")
+    total = sum(
+        day["contributionCount"] for day in days
+    )
+
+    print("--------------------------------")
+    print(f"GitHub user: {USER}")
+    print(f"Active days: {active}/30")
+    print(f"Contributions: {total}")
+    print("SVG files generated successfully!")
+    print("--------------------------------")
+
+
+if __name__ == "__main__":
+    main()
