@@ -10,16 +10,28 @@ Skills: Figma / Dart/ Java/ Data Structure Algorithm/ OOP/ Flutter
 - 📫 How to reach me: khadimulislam.dev@gmail.com 
 - ⚡ Fun fact: I love to write code 
 
+<div align="center">
 
-[<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/github.svg' alt='github' height='40'>](https://github.com/md-khadimul-islam)  [<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/linkedin.svg' alt='linkedin' height='40'>](https://www.linkedin.com/in/md-khadimul-islam/)  [<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/facebook.svg' alt='facebook' height='40'>](https://www.facebook.com/khadimul723)  [<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/instagram.svg' alt='instagram' height='40'>](https://www.instagram.com/khadimul.legend/)  
+### ☕ Support My Work
 
-<a href='https://archiveprogram.github.com/'><img src='https://raw.githubusercontent.com/acervenky/animated-github-badges/master/assets/acbadge.gif' width='40' height='40'></a> <a href='https://docs.github.com/en/developers'><img src='https://raw.githubusercontent.com/acervenky/animated-github-badges/master/assets/devbadge.gif' width='40' height='40'></a> <a href='https://github.com/pricing'><img src='https://raw.githubusercontent.com/acervenky/animated-github-badges/master/assets/pro.gif' width='40' height='40'></a> <a href='https://stars.github.com/'><img src='https://raw.githubusercontent.com/acervenky/animated-github-badges/master/assets/starbadge.gif' width='35' height='35'></a> <a href='https://docs.github.com/en/github/supporting-the-open-source-community-with-github-sponsors'><img src='https://raw.githubusercontent.com/acervenky/animated-github-badges/master/assets/sponsorbadge.gif' width='35' height='35'></a> 
+If you enjoy my work, consider buying me a coffee!
 
-[![trophy](https://github-profile-trophy.vercel.app/?username=md-khadimul-islam)](https://github.com/ryo-ma/github-profile-trophy)
+<a href="https://buymeacoffee.com/khadimul.dev">
+<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="55" alt="Buy Me a Coffee"/>
+</a>
+</div>
 
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=md-khadimul-islam)](https://github.com/anuraghazra/github-readme-stats)
+<hr>
+My GitHub activity
+<div align="center"> <img src="https://raw.githubusercontent.com/md-khadimul-islam/md-khadimul-islam/main/assets/activity.svg" alt="Days I coded in the last 30 days" width="480">
 
-![GitHub stats](https://github-readme-stats.vercel.app/api?username=md-khadimul-islam&show_icons=true)  
+<br><br>
 
-![GitHub streak stats](https://streak-stats.demolab.com/?user=md-khadimul-islam)  
-
+<table> <tr> <td align="center" valign="middle"> <img src="https://streak-stats.demolab.com?user=md-khadimul-islam&theme=dark&hide_border=true&background=0d1117&ring=2f6feb&fire=2f6feb&currStreakNum=ffffff&currStreakLabel=ffffff&sideNums=58a6ff&sideLabels=ffffff&dates=9ca3af&stroke=444c56" alt="GitHub streak stats"> </td> <td align="center" valign="middle"> <img
+  src="https://github-stats-extended.vercel.app/api/top-langs/?username=md-khadimul-islam&layout=compact&theme=github_dark&hide_border=true&bg_color=0D1117&langs_count=6"
+  alt="Most Used Languages"
+  width="100%"
+/> </td> </tr> </table> </div> <hr>
+<p align="center">
+  Build with purpose. Keep learning. Stay curious. 🚀
+</p>
