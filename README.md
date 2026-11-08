@@ -52,8 +52,8 @@ If you enjoy my work, consider buying me a coffee!
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://streak-stats.demolab.com?user=md-khadimul-islam&amp;theme=github-dark-blue&amp;hide_border=true&amp;background=0D1117&amp;date_format=M%20j%5B%2C%20Y%5D" />
-    <img height="170" alt="GitHub streak" src="https://streak-stats.demolab.com?user=md-khadimul-islam&amp;theme=default&amp;hide_border=true&amp;date_format=M%20j%5B%2C%20Y%5D" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://streak-stats.demolab.com?user=md-khadimul-islam&amp;theme=github-dark-blue&amp;hide_border=true&amp;background=0D1117&amp;date_format=M%20j%5B%2C%20Y%5D&timezone=Asia%2FDhaka" />
+    <img height="170" alt="GitHub streak" src="https://streak-stats.demolab.com?user=md-khadimul-islam&amp;theme=default&amp;hide_border=true&amp;date_format=M%20j%5B%2C%20Y%5D&timezone=Asia%2FDhaka" />
   </picture>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://github-stats-extended.vercel.app/api/top-langs/?username=md-khadimul-islam&amp;layout=compact&amp;langs_count=6&amp;theme=github_dark&amp;hide_border=true&amp;bg_color=0D1117&amp;card_width=320&amp;cache_seconds=86400" />
