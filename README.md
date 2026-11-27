@@ -28,7 +28,7 @@ I enjoy transforming ideas into practical software solutions, writing clean and 
 - 📫 Email: **khadimulislam.dev@gmail.com**
 - ⚡ Fun fact: I love solving problems and turning ideas into working applications.
 
-<div align="center">
+<!-- <div align="center">
 
 ### ☕ Support My Work
 
@@ -37,7 +37,7 @@ If you enjoy my work, consider buying me a coffee!
 <a href="https://buymeacoffee.com/khadimul.dev">
 <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="55" alt="Buy Me a Coffee"/>
 </a>
-</div>
+</div> -->
 
 ---
 
